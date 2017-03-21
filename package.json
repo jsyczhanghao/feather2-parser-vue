@@ -1,0 +1,19 @@
+{
+  "name": "feather2-parser-vue",
+  "version": "1.0.0",
+  "description": "A parser plugin for feather2 to convert vue component",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/jsyczhanghao/feather2-parser-vue.git"
+  },
+  "keywords": [
+    "feather2",
+    "vue",
+    "parser"
+  ],
+  "author": "jsyczhanghao@sina.com"
+}
