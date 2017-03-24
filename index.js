@@ -1,6 +1,6 @@
 'use strict';
 
-var REG = /<(script|style|template)>([\s\S]*?)<\/\1>/gi;
+var REG = /<(script|style|template)>([\s\S]*)<\/\1>/gi;
 var CSS_TPL = feather.util.read(__dirname + '/css.tpl');
 
 module.exports = function(content, file){
