@@ -18,16 +18,21 @@ module.exports = function(content, file){
             var css = feather.file.wrap(feather.project.getProjectPath() + file.subpathNoExt + '.css');
             css.setContent(cont);
             css.release = false;
+            css.useMap = false;
             feather.compile(css);
             style = CSS_TPL.replace('__CSS__', JSON.stringify(css.getContent()));
         }
     });
 
-    script = style + '\r\n' + script;
+    if(tpl.trim() != ''){
+        //exports.default 支持后续es6编译
+        script += ';var _vueTpl = ' + JSON.stringify(tpl) + ';module.exports[\'default\'] ? (module.exports[\'default\'].template = _vueTpl)'
+        + ' : (module.exports.template = _vueTpl);';
+    }
 
-    if(tpl.trim() == '') return script;
+    if(style.trim() != ''){
+        script += style;
+    }
 
-    //exports.default 支持后续es6编译
-    return 'var _vueTpl = ' + JSON.stringify(tpl) + ';\r\n' + script + '\r\nmodule.exports[\'default\'] ? (module.exports[\'default\'].template = _vueTpl)'
-        + ' : (module.exports.template = _vueTpl)';
+    return script;
 };
