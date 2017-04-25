@@ -6,7 +6,7 @@ var CSS_TPL = feather.util.read(__dirname + '/css.tpl');
 module.exports = function(content, file){
     var script = '', tpl = '', style = '';
 
-    content.replace(REG, function(all, tag, cont){
+    content.toString().replace(REG, function(all, tag, cont){
         if(tag == 'script'){
             script = cont;
         }else if(tag == 'template'){

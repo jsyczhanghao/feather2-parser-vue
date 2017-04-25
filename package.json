@@ -1,6 +1,6 @@
 {
   "name": "feather2-parser-vue",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A parser plugin for feather2 to convert vue component",
   "main": "index.js",
   "scripts": {
