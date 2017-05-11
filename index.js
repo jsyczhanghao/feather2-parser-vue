@@ -1,37 +1,39 @@
 'use strict';
 
 var REG = /<(script|style|template)>([\s\S]*)<\/\1>/gi;
-var CSS_TPL = feather.util.read(__dirname + '/css.tpl');
 
 module.exports = function(content, file){
     var script = '', tpl = '', style = '';
 
     content.toString().replace(REG, function(all, tag, cont){
+        if(cont.trim() == '') return;
+
         if(tag == 'script'){
             script = cont;
         }else if(tag == 'template'){
             tpl = cont;
         }else{
-            if(cont.trim() == '') return;
-
             //生成一个临时文件进行css编译
-            var css = feather.file.wrap(feather.project.getProjectPath() + file.subpathNoExt + '.css');
+            var css = feather.file.wrap(feather.project.getProjectPath() + file.subpathNoExt + '_.css');
+            css.cache = file.cache;
             css.setContent(cont);
-            css.release = false;
-            css.useMap = false;
             feather.compile(css);
-            style = CSS_TPL.replace('__CSS__', JSON.stringify(css.getContent()));
+            css.links.forEach(function(f){
+                file.addLink(f);
+            });
+            file.derived.push(css);
+            file.addRequire(css.id);
         }
     });
 
-    if(tpl.trim() != ''){
+    if(!script && !tpl){
+        return content;
+    }
+
+    if(tpl){
         //exports.default 支持后续es6编译
         script += ';var _vueTpl = ' + JSON.stringify(tpl) + ';module.exports[\'default\'] ? (module.exports[\'default\'].template = _vueTpl)'
         + ' : (module.exports.template = _vueTpl);';
-    }
-
-    if(style.trim() != ''){
-        script += style;
     }
 
     return script;
