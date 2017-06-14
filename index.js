@@ -1,11 +1,12 @@
 'use strict';
 
-var REG = /<(script|style|template)>([\s\S]*)<\/\1>/gi;
+var REG = /<(script|style|template)(?: ([^>]+))?>([\s\S]*)<\/\1>/gi;
+var LANG_REG = /\blang=['"]?([^'" ]+)['"]?/;
 
 module.exports = function(content, file){
     var script = '', tpl = '', style = '';
 
-    content.toString().replace(REG, function(all, tag, cont){
+    content.toString().replace(REG, function(all, tag, property, cont){
         if(cont.trim() == '') return;
 
         if(tag == 'script'){
@@ -13,8 +14,15 @@ module.exports = function(content, file){
         }else if(tag == 'template'){
             tpl = cont;
         }else{
+            var ext = 'css';
+
+            if(property){
+                ext = property.match(LANG_REG);
+                ext = ext ? ext[1] || 'css' : 'css';
+            }
+
             //生成一个临时文件进行css编译
-            var css = feather.file.wrap(feather.project.getProjectPath() + file.subpathNoExt + '_.css');
+            var css = feather.file.wrap(feather.project.getProjectPath() + file.subpathNoExt + '_.' + ext);
             css.cache = file.cache;
             css.setContent(cont);
             feather.compile(css);
