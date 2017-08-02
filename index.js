@@ -1,10 +1,12 @@
 'use strict';
 
 var REG = /<(script|style|template)(?: ([^>]+))?>([\s\S]*)<\/\1>/gi;
-var LANG_REG = /\blang=['"]?([^'" ]+)['"]?/;
+var LANG_REG = /\blang=['"]?([^'" ]+)['"]?/, SCOPED_REG = /\bscoped\b/;
+var TEMPLATE = feather.util.read(__dirname + '/template.tpl');
+var SCOPE = feather.util.read(__dirname + '/scope.tpl');
 
 module.exports = function(content, file){
-    var script = '', tpl = '', style = '';
+    var script = '', tpl = '', style = '', needScoped = false, mid = feather.util.md5(file.id);
 
     content.toString().replace(REG, function(all, tag, property, cont){
         if(cont.trim() == '') return;
@@ -26,6 +28,22 @@ module.exports = function(content, file){
             css.cache = file.cache;
             css.setContent(cont);
             feather.compile(css);
+
+            if(needScoped = SCOPED_REG.test(property)){
+                cont = css.getContent().trim();
+                cont = cont.replace(/((?:^|\})\s*)([^\{]+)/g, function(all, start, selector){
+                    selector = selector.split(/\s*,\s*/).map(function(item){
+                        item = item.split(/\s+/);
+                        item[0] = item[0] + '[data-' + mid + ']';
+                        return item.join(' ');
+                    }).join(',');
+
+                    return start + selector;
+                });
+
+                css.setContent(cont);
+            }
+
             css.links.forEach(function(f){
                 file.addLink(f);
             });
@@ -40,8 +58,11 @@ module.exports = function(content, file){
 
     if(tpl){
         //exports.default 支持后续es6编译
-        script += ';var _vueTpl = ' + JSON.stringify(tpl) + ';module.exports[\'default\'] ? (module.exports[\'default\'].template = _vueTpl)'
-        + ' : (module.exports.template = _vueTpl);';
+        script += TEMPLATE.replace('${tpl}', JSON.stringify(tpl));
+
+        if(needScoped){
+            script += SCOPE.replace('${id}', mid);
+        }
     }
 
     return script;
