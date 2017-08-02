@@ -54,6 +54,16 @@ require.async('a', function(A){
 });
 ```
 
+###可以给style加scoped属性，插件会自动进行样式作用域处理
+
+```js
+<style scoped>
+div{
+    font-size: 14px;
+}
+</style>
+```
+
 ###使用es6
 
 ```sh
