@@ -54,7 +54,17 @@ require.async('a', function(A){
 });
 ```
 
-###使用es6
+### 可以给style加scoped属性，插件会自动进行样式作用域处理
+
+```js
+<style scoped>
+div{
+    font-size: 14px;
+}
+</style>
+```
+
+### 使用es6
 
 ```sh
 npm install fis-parser-es6-babel --save
