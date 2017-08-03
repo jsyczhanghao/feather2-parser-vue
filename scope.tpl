@@ -1,5 +1,5 @@
 var __id = "data-${id}";
-var __beforeCreate = __exports.__beforeCreate;
+var __beforeCreate = __exports.beforeCreate;
 
 function __override(f){
     return function(){
