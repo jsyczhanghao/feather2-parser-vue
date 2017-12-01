@@ -33,8 +33,17 @@ module.exports = function(content, file){
                 cont = css.getContent().trim();
                 cont = cont.replace(/((?:^|\})\s*)([^\{]+)/g, function(all, start, selector){
                     selector = selector.split(/\s*,\s*/).map(function(item){
+                        item = item.trim();
+
+                        if(item[0] == '@'){
+                            return item;
+                        }
+
                         item = item.split(/\s+/);
-                        item[0] = item[0] + '[data-' + mid + ']';
+                        var a = item[0].split(':');
+                        a[0] = a[0] + '[data-' + mid + ']';
+                        a = a.join(':');
+                        item[0] = a;
                         return item.join(' ');
                     }).join(',');
 
