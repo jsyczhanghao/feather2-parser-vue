@@ -56,6 +56,12 @@ module.exports = function(content, file){
             css.links.forEach(function(f){
                 file.addLink(f);
             });
+
+            css._mtime = file.getMtime();
+            css.getMtime = function(){
+                return this._mtime;
+            };
+
             file.derived.push(css);
             file.addRequire(css.id);
         }
