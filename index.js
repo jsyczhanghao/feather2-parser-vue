@@ -5,6 +5,21 @@ var LANG_REG = /\blang=['"]?([^'" ]+)['"]?/, SCOPED_REG = /\bscoped\b/;
 var TEMPLATE = feather.util.read(__dirname + '/template.tpl');
 var SCOPE = feather.util.read(__dirname + '/scope.tpl');
 
+var old = feather.util.mtime, root = feather.project.getProjectPath();
+feather.util.mtime = function(realpath){
+    var mtime = old(realpath);
+
+    if(!mtime){
+        var path = realpath.replace(/_\.[^\.]+$/, '') + '.vue';
+
+        if(path != realpath){
+            return old(path);
+        }
+    }
+
+    return mtime;
+};
+
 module.exports = function(content, file){
     var script = '', tpl = '', style = '', needScoped = false, mid = feather.util.md5(file.id);
 
@@ -56,12 +71,6 @@ module.exports = function(content, file){
             css.links.forEach(function(f){
                 file.addLink(f);
             });
-
-            css._mtime = file.getMtime();
-            css.getMtime = function(){
-                return this._mtime;
-            };
-
             file.derived.push(css);
             file.addRequire(css.id);
         }
